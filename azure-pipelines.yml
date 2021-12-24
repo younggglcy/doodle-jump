@@ -10,7 +10,7 @@ resources:
 
 variables:
   dir: '/home/code/xmas-frontend'
-  static: '/home/static/xmas'
+  static: '/usr/share/nginx/html/xmas'
   tag: '$(Build.BuildId)'
   imageName: 'xmas-frontend'
 
