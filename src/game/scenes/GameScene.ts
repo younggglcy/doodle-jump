@@ -3,7 +3,6 @@ import backgroundUrl from '../assets/bac.png'
 import cloudUrl from '../assets/cloud.png'
 import fishUrl from '../assets/fish.png'
 import feimaUrl from '../assets/fi.png'
-import doodlerUrl from '../assets/Doodler.png'
 import platformUrl from '../assets/platform.png'
 import obstacleUrl from '../assets/nanguatou.png'
 import { updateMark } from '../../api/user'
@@ -88,7 +87,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('doodler', doodlerUrl)
         this.load.image('platform', platformUrl)
         this.load.image('obstacle', obstacleUrl)
         this.load.image('background', backgroundUrl)
