@@ -1,0 +1,32 @@
+# Docker
+# Build a Docker image
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- dev
+
+resources:
+- repo: self
+
+variables:
+  dir: '/home/code/xmas-frontend'
+  static: '/home/static/xmas'
+  tag: '$(Build.BuildId)'
+  imageName: 'xmas-frontend'
+
+stages:
+- stage: Deploy
+  displayName: Pull image and run
+  jobs:
+  - deployment: VMDeploy
+    displayName: Deploy to VM
+    environment:
+      name: uni-tencent
+      resourceType: VirtualMachine
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - bash: cd $(DIR) && git fetch --all && git reset --hard origin/dev && git pull origin dev
+          - bash: cd $(DIR) && docker build -t $(IMAGENAME):$(TAG) .
+          - bash: cd $(DIR) && docker run -v $(STATIC):/mnt $(IMAGENAME):$(TAG) /bin/bash -c 'cp -r /app/dist /mnt'
