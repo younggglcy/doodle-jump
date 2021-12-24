@@ -29,4 +29,4 @@ stages:
           steps:
           - bash: cd $(DIR) && git fetch --all && git reset --hard origin/dev && git pull origin dev
           - bash: cd $(DIR) && docker build -t $(IMAGENAME):$(TAG) .
-          - bash: cd $(DIR) && docker run -v $(STATIC):/mnt $(IMAGENAME):$(TAG) /bin/bash -c 'cp -r /app/dist /mnt'
+          - bash: cd $(DIR) && docker run -v $(STATIC):/mnt $(IMAGENAME):$(TAG) /bin/bash -c 'cp -r /app/dist/* /mnt'
