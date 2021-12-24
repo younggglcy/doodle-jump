@@ -1,0 +1,41 @@
+#usernameInputContainer {
+    display: none;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100%;
+    max-width: 421px;
+    height: 15vmin;
+    top: 75%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#usernameInputContainer label {
+    display: flex;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    flex: 1;
+}
+
+#usernameInputContainer #usernameInput {
+    flex: 1;
+    width: 60%;
+}
+
+.alert {
+    display: none;
+    position: absolute;
+    width: 300px;
+    height: 160px;
+    font-weight: 700;
+    font-size: 22px;
+    text-align: center;
+    color: red;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+}
