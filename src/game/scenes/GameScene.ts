@@ -10,6 +10,12 @@ import { PBEvent } from '../utils/observer'
 import { EventUtil } from '../utils/event'
 import { setAlert } from "../utils/helper"
 
+declare var DeviceOrientationEvent: {
+    prototype: DeviceOrientationEvent;
+    new(type: string, eventInitDict?: DeviceOrientationEventInit): DeviceOrientationEvent;
+    requestPermission: () => Promise<any>
+}
+
 const PLAYERBIT = 0x0001
 const PLATFORMBIT = 0X0002
 const OBSTACLEBIT = 0x0003
