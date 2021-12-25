@@ -6,6 +6,7 @@ import cloud2Url from '../assets/cloud2.png'
 import cloud3Url from '../assets/cloud3.png'
 import markUrl from '../assets/mark.png'
 import { register } from '../../api/user'
+import { setAlert } from "../utils/helper"
 
 // 游戏的菜单栏
 export default class MenuScene extends Phaser.Scene {
@@ -85,18 +86,6 @@ export default class MenuScene extends Phaser.Scene {
         }
     }
 
-    setAlert: (msg: string) => void = (msg) => {
-        const alertBox = document.getElementById('alertBox')
-        alertBox!.style.display = 'block'
-        alertBox!.innerText = msg
-
-        new Promise(resolve => setTimeout(resolve, 1500))
-            .then(() => {
-                alertBox!.style.display = 'none'
-            })
-
-    }
-
     hidInputContainer() {
         const usernameInputContainer = document.getElementById('usernameInputContainer')
         usernameInputContainer!.style.display = 'none'
@@ -107,7 +96,7 @@ export default class MenuScene extends Phaser.Scene {
             const inputValue = usernameInput!.value
 
             if (usernameInput && !inputValue) {
-                this.setAlert('请先输入用户名')
+                setAlert('请先输入用户名')
                 return 
             }
 
@@ -129,7 +118,7 @@ export default class MenuScene extends Phaser.Scene {
                     this.hidInputContainer()
                     this.scene.start('game')
                 }).catch(() => {
-                    this.setAlert('该用户名已经被注册过了！')
+                    setAlert('该用户名已经被注册过了！')
                 })
             }
     }

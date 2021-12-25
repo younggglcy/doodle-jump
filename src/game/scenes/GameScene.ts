@@ -8,6 +8,7 @@ import obstacleUrl from '../assets/nanguatou.png'
 import { updateMark } from '../../api/user'
 import { PBEvent } from '../utils/observer'
 import { EventUtil } from '../utils/event'
+import { setAlert } from "../utils/helper"
 
 const PLAYERBIT = 0x0001
 const PLATFORMBIT = 0X0002
@@ -257,14 +258,34 @@ export default class GameScene extends Phaser.Scene {
         player.setFixedRotation()
 
         if (window.DeviceOrientationEvent) {
-            window.addEventListener('deviceorientation', event => {
-                if (event.gamma! < -3) {
-                    player.setVelocityX(event.gamma! * 0.4)
+            const orientationCb = (e: DeviceOrientationEvent) => {
+                if (e.gamma! < -3) {
+                    player.setVelocityX(e.gamma! * 0.4)
                 }
-                if (event.gamma! > 3) {
-                    player.setVelocityX(event.gamma! * 0.4)
+                if (e.gamma! > 3) {
+                    player.setVelocityX(e.gamma! * 0.4)
                 }
-            }, true)
+            }
+            if (!!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
+                // IOS
+                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    DeviceOrientationEvent.requestPermission()
+                        .then((permissionState: any) => {
+                            if (permissionState === 'granted') {
+                                window.addEventListener('deviceorientation', orientationCb, true)
+                            } else {
+                                // handle denied
+                            }
+                        })
+                        .catch((err: any) => {
+                            console.log(err)
+                        });
+                    } else {
+                      console.log(typeof DeviceOrientationEvent)
+                } 
+            } else {
+                window.addEventListener('deviceorientation', orientationCb, true)
+            }
         } else {
             const gameElement = document.getElementById('game')
             if (gameElement) {
