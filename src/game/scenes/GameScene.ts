@@ -266,10 +266,10 @@ export default class GameScene extends Phaser.Scene {
         if (window.DeviceOrientationEvent) {
             const orientationCb = (e: DeviceOrientationEvent) => {
                 if (e.gamma! < -3) {
-                    player.setVelocityX(e.gamma! * 0.4)
+                    player.setVelocityX(e.gamma! * 0.3)
                 }
                 if (e.gamma! > 3) {
-                    player.setVelocityX(e.gamma! * 0.4)
+                    player.setVelocityX(e.gamma! * 0.3)
                 }
             }
             if (!!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
