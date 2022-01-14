@@ -68,7 +68,7 @@ export default class GameScene extends Phaser.Scene {
             while (this.isPlatformOverLap(highestPlat, newPlat) || highestPlat.y - newPlat.y > MAXJUMPDIS) {
                 newPlat.setPosition(
                     Phaser.Math.Between(0, 421),
-                    Phaser.Math.Between(highestPlat.y - 15, highestPlat.y - 200)
+                    Phaser.Math.Between(highestPlat.y - highestPlat.height - 5, highestPlat.y - 220)
                 )
             }
             
@@ -238,7 +238,7 @@ export default class GameScene extends Phaser.Scene {
 
     isPlatformOverLap = (a: Phaser.Physics.Matter.Image, b: Phaser.Physics.Matter.Image) => {
         if (
-            Math.abs(a.x - b.x) <= a.width || 
+            Math.abs(a.x - b.x) <= a.width && 
             Math.abs(a.y - b.y) <= a.height
         ) {
             return true
