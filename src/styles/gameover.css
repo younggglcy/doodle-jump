@@ -66,3 +66,19 @@
     background: #ffdf65 !important;
     font-weight: 700;
 }
+
+#picArea {
+    display: flex;
+    flex-direction: column;
+}
+
+#userInfo,
+#qrCode,
+.saveMeBtn {
+    flex: auto;
+}
+
+.saveMeBtn {
+    width: 50%;
+    align-self: center;
+}
