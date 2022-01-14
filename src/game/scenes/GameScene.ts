@@ -190,9 +190,9 @@ export default class GameScene extends Phaser.Scene {
     createPlatforms(platformsNum: number) {
         const platArr = ['platform1', 'platform2', 'platform3', 'platform4']
         const createPlat = (lasty?: number) => {
-            const randomIdx = Math.floor(Math.random() * platArr.length)
+            // const randomIdx = Math.floor(Math.random() * platArr.length)
             const plat = this.matter.add.image(
-                Phaser.Math.Between(0, 421),
+                lasty !== undefined && lasty <= 750 && lasty >= 450 ? 240 : Phaser.Math.Between(0, 421),
                 lasty !== undefined ? Phaser.Math.Between(lasty + 20, lasty + 200) : -50,
                 // platArr[randomIdx],
                 'platform',
