@@ -29,6 +29,7 @@ const Game = () => {
             </div>
             {/** Alert */}
             <div className='alert' id='alertBox' />
+            <button id='ios' className='IOSBtn'>IOS用户点我申请陀螺仪权限</button>
         </>
     )
 }

@@ -275,19 +275,29 @@ export default class GameScene extends Phaser.Scene {
             if (!!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
                 // IOS
                 if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                    DeviceOrientationEvent.requestPermission()
-                        .then((permissionState: any) => {
+                    const IOSBtn = document.getElementById('ios') as HTMLButtonElement
+                    IOSBtn.style.display = 'block'
+                    const that = this
+                    IOSBtn.click = function() {
+                        that.scene.stop('game')
+                        DeviceOrientationEvent.requestPermission()
+                        .then((permissionState: 'granted' | 'denied' | 'prompt') => {
                             if (permissionState === 'granted') {
                                 window.addEventListener('deviceorientation', orientationCb, true)
                             } else {
                                 // handle denied
                             }
                         })
+                        .then(() =>{ 
+                            that.scene.start('game')
+                            IOSBtn.style.display = 'none'
+                        })
                         .catch((err: any) => {
                             console.log(err)
-                        });
-                    } else {
-                      console.log(typeof DeviceOrientationEvent)
+                        })
+                    }
+                } else {
+                    console.log(typeof DeviceOrientationEvent)
                 } 
             } else {
                 window.addEventListener('deviceorientation', orientationCb, true)

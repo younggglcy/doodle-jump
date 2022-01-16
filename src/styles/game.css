@@ -39,3 +39,11 @@
     left: 50%;
     transform: translateX(-50%);
 }
+
+.IOSBtn {
+    display: none;
+    position: absolute;
+    width: 25vmin;
+    height: 16vmin;
+    z-index: 100;
+}
