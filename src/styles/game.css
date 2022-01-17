@@ -45,5 +45,8 @@
     position: absolute;
     width: 25vmin;
     height: 16vmin;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 100;
 }

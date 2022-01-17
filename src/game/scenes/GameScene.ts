@@ -272,33 +272,34 @@ export default class GameScene extends Phaser.Scene {
                     player.setVelocityX(e.gamma! * 0.3)
                 }
             }
-            if (!!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+            // console.log(navigator.userAgent)
+            // if (!!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
+            if (isIOS && typeof DeviceOrientationEvent.requestPermission === 'function') {
                 // IOS
-                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                    const IOSBtn = document.getElementById('ios') as HTMLButtonElement
-                    IOSBtn.style.display = 'block'
-                    const that = this
-                    IOSBtn.click = function() {
-                        that.scene.stop('game')
-                        DeviceOrientationEvent.requestPermission()
-                        .then((permissionState: 'granted' | 'denied' | 'prompt') => {
-                            if (permissionState === 'granted') {
-                                window.addEventListener('deviceorientation', orientationCb, true)
-                            } else {
-                                // handle denied
-                            }
-                        })
-                        .then(() =>{ 
-                            that.scene.start('game')
-                            IOSBtn.style.display = 'none'
-                        })
-                        .catch((err: any) => {
-                            console.log(err)
-                        })
-                    }
-                } else {
-                    console.log(typeof DeviceOrientationEvent)
-                } 
+                const IOSBtn = document.getElementById('ios') as HTMLButtonElement
+                // console.log('IOSBtn', IOSBtn)
+                IOSBtn.style.display = 'block'
+                this.scene.pause('game')
+                const that = this
+                IOSBtn.onclick = function() {
+                    // console.log('clicked!!')
+                    DeviceOrientationEvent.requestPermission()
+                    .then((permissionState: 'granted' | 'denied' | 'prompt') => {
+                        if (permissionState === 'granted') {
+                            window.addEventListener('deviceorientation', orientationCb, true)
+                        } else {
+                            // handle denied
+                        }
+                    })
+                    .then(() =>{ 
+                        that.scene.start('game')
+                        IOSBtn.style.display = 'none'
+                    })
+                    .catch((err: any) => {
+                        console.log(err)
+                    })
+                }
             } else {
                 window.addEventListener('deviceorientation', orientationCb, true)
             }
