@@ -7,6 +7,7 @@ import cloud3Url from '../assets/cloud3.png'
 import markUrl from '../assets/mark.png'
 import { register } from '../../api/user'
 import { setAlert } from "../utils/helper"
+import { WIDTH, HEIGHT } from '../utils/constants'
 
 // 游戏的菜单栏
 export default class MenuScene extends Phaser.Scene {
@@ -37,7 +38,7 @@ export default class MenuScene extends Phaser.Scene {
             fontSize: '40px'
         })
 
-        const mark = this.add.image(210, 375, 'mark')
+        const mark = this.add.image(WIDTH / 2, HEIGHT / 2, 'mark')
         .setDepth(5)
         .setDisplaySize(180, 150)
         .setInteractive({
@@ -62,12 +63,12 @@ export default class MenuScene extends Phaser.Scene {
     }
 
     createBackground() {
-        this.add.image(0, 0, 'sky').setDisplayOrigin(0).setDisplaySize(421, 750)
+        this.add.image(0, 0, 'sky').setDisplayOrigin(0).setDisplaySize(WIDTH, HEIGHT)
 
-        this.add.image(210, 600, 'cloud').setDisplaySize(421, 250)
-        this.add.image(400, 400, 'cloud1').setDisplaySize(300, 108)
-        this.add.image(-15, 280, 'cloud2').setDisplaySize(300, 108)
-        this.add.image(460, 95, 'cloud3').setDisplaySize(300, 108)
+        this.add.image(0, 600 / 750 * HEIGHT, 'cloud').setDisplaySize(WIDTH, 250 / 750 * HEIGHT).setDisplayOrigin(0)
+        this.add.image(400 / 421 * WIDTH, 400 / 750 * HEIGHT, 'cloud1').setDisplaySize(300 / 421 * WIDTH, 108 / 750 * HEIGHT)
+        this.add.image(-15 / 421 * WIDTH, 280 / 750 * HEIGHT, 'cloud2').setDisplaySize(300 / 421 * WIDTH, 108 / 750 * HEIGHT)
+        this.add.image(460 / 421 * WIDTH, 95 / 750 * HEIGHT, 'cloud3').setDisplaySize(300 / 421 * WIDTH, 108 / 750 * HEIGHT)
     }
 
     update(time: number, delta: number): void {

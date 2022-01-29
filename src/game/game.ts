@@ -2,6 +2,7 @@ import Phaser from "phaser"
 
 import GameScene from "./scenes/GameScene"
 import MenuScene from "./scenes/MenuScene"
+import { WIDTH, HEIGHT } from './utils/constants'
 
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
@@ -24,10 +25,12 @@ const config: Phaser.Types.Core.GameConfig = {
         },
     },
     scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 421,
-        height: 750,
+        // mode: Phaser.Scale.FIT,
+        // autoCenter: Phaser.Scale.CENTER_BOTH,
+        // width: 421,
+        // height: 750,
+        width: WIDTH,
+        height: HEIGHT,
         parent: 'game'
     },
     backgroundColor: '#46a6ce',
