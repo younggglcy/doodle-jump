@@ -1,39 +1,52 @@
 .gameover-container {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     width: 100%;
     min-height: 100vh;
-    background-image: url('../../src/game/assets/merryChristmas.jpg');
-    background-repeat: no-repeat;
-    background-size: 100vw 100vh;
-    background-position: center;
-}
-
-.gameover-container .msg {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
-    flex-shrink: 0;
+    overflow: hidden !important;
+    background-image: 
+        url('../../src/game/assets/cloud.png'),
+        url('../../src/game/assets/cloud1.png'),
+        url('../../src/game/assets/cloud2.png'),
+        url('../../src/game/assets/cloud3.png'),
+        url('../../src/game/assets/bac.png');
+    background-repeat: 
+        no-repeat,
+        no-repeat,
+        no-repeat,
+        no-repeat,
+        no-repeat;
+    background-size: 
+        100vw 25vh,
+        55vw 10vh,
+        55vw 10vh,
+        55vw 10vh,
+        100vw 100vh;
+    background-position: 
+        bottom,
+        65vw 20%,
+        -20vw 40%,
+        75vw 60%,
+        center;
 }
 
 .gameover-container .btn-container {
     display: flex;
+    flex: 0 0 70vh;
     flex-direction: column;
-    flex: 4 0 auto;
 }
 
 .gameover-container .btn-container button {
     flex-grow: 1;
     font-size: 28px;
     font-weight: 700;
+    color: #fff;
+    background-color: transparent;
+    border: none;
     min-width: 8em;
     margin: 1.5em 0;
-}
-
-.gameover-container .btn-container .btn {
-    background: linear-gradient(30deg, rgb(255,132,124), rgb(232,74,95));
 }
 
 .modal-footer {

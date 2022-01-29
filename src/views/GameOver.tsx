@@ -160,7 +160,6 @@ const Gameover = () => {
     return (
         <>
             <div className="gameover-container">
-                {/* <div className='msg'>一些有趣的话</div>     */}
                 <div className='btn-container'>
                     <Button onClick={restart} shape='circle' className='btn'>重开</Button>
                     <Button onClick={share} shape='circle' className='btn'>分享</Button>

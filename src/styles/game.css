@@ -4,26 +4,20 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
     width: 100%;
     max-width: 421px;
-    height: 15vmin;
+    height: 12vmin;
     top: 75%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
-#usernameInputContainer label {
-    display: flex;
-    justify-content: center;
-    font-size: 24px;
-    font-weight: 700;
-    flex: 1;
-}
-
-#usernameInputContainer #usernameInput {
-    flex: 1;
-    width: 60%;
+#usernameInput {
+    width: 65%;
+    height: 100%;
+    border-radius: 12vmin;
+    text-indent: 2em;
 }
 
 .alert {

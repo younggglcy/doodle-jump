@@ -24,8 +24,7 @@ const Game = () => {
             <div id='game' />        
             {/** 用做输入名字 */}
             <div id='usernameInputContainer'>
-                <label>请输入您的用户名</label>
-                <input type='text' id='usernameInput' pattern='[A-Za-z0-9]+' placeholder='输入您的用户名...' />
+                <input type='text' id='usernameInput' pattern='[A-Za-z0-9]+' placeholder='请输入一个昵称' />
             </div>
             {/** Alert */}
             <div className='alert' id='alertBox' />
