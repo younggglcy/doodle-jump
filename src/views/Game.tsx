@@ -1,5 +1,6 @@
 import { config } from '../game/game'
 import { useEffect } from 'react'
+import { message } from 'antd'
 import '../styles/game.css'
 
 const Game = () => {
@@ -13,6 +14,9 @@ const Game = () => {
             localStorage.removeItem('points')
         }
         const game = new Phaser.Game(config)
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent) && /safari/i.test(navigator.userAgent)) {
+            message.warning('IOS用户建议尝试更换浏览器游玩')
+        }
         return () => {
             game && game.destroy(true)
             console.log('game is destroyed')
