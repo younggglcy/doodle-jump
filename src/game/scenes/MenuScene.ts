@@ -6,6 +6,8 @@ import cloud2Url from '../assets/cloud2.png'
 import cloud3Url from '../assets/cloud3.png'
 import markUrl from '../assets/mark.png'
 import { register } from '../../api/user'
+import { setAlert } from "../utils/helper"
+import { WIDTH, HEIGHT } from '../utils/constants'
 
 // 游戏的菜单栏
 export default class MenuScene extends Phaser.Scene {
@@ -36,7 +38,7 @@ export default class MenuScene extends Phaser.Scene {
             fontSize: '40px'
         })
 
-        const mark = this.add.image(210, 375, 'mark')
+        const mark = this.add.image(WIDTH / 2, HEIGHT / 2, 'mark')
         .setDepth(5)
         .setDisplaySize(180, 150)
         .setInteractive({
@@ -61,12 +63,12 @@ export default class MenuScene extends Phaser.Scene {
     }
 
     createBackground() {
-        this.add.image(0, 0, 'sky').setDisplayOrigin(0).setDisplaySize(421, 750)
+        this.add.image(0, 0, 'sky').setDisplayOrigin(0).setDisplaySize(WIDTH, HEIGHT)
 
-        this.add.image(210, 600, 'cloud').setDisplaySize(421, 250)
-        this.add.image(400, 400, 'cloud1').setDisplaySize(300, 108)
-        this.add.image(-15, 280, 'cloud2').setDisplaySize(300, 108)
-        this.add.image(460, 95, 'cloud3').setDisplaySize(300, 108)
+        this.add.image(0, 600 / 750 * HEIGHT, 'cloud').setDisplaySize(WIDTH, 250 / 750 * HEIGHT).setDisplayOrigin(0)
+        this.add.image(400 / 421 * WIDTH, 400 / 750 * HEIGHT, 'cloud1').setDisplaySize(300 / 421 * WIDTH, 108 / 750 * HEIGHT)
+        this.add.image(-15 / 421 * WIDTH, 280 / 750 * HEIGHT, 'cloud2').setDisplaySize(300 / 421 * WIDTH, 108 / 750 * HEIGHT)
+        this.add.image(460 / 421 * WIDTH, 95 / 750 * HEIGHT, 'cloud3').setDisplaySize(300 / 421 * WIDTH, 108 / 750 * HEIGHT)
     }
 
     update(time: number, delta: number): void {
@@ -85,18 +87,6 @@ export default class MenuScene extends Phaser.Scene {
         }
     }
 
-    setAlert: (msg: string) => void = (msg) => {
-        const alertBox = document.getElementById('alertBox')
-        alertBox!.style.display = 'block'
-        alertBox!.innerText = msg
-
-        new Promise(resolve => setTimeout(resolve, 1500))
-            .then(() => {
-                alertBox!.style.display = 'none'
-            })
-
-    }
-
     hidInputContainer() {
         const usernameInputContainer = document.getElementById('usernameInputContainer')
         usernameInputContainer!.style.display = 'none'
@@ -104,34 +94,27 @@ export default class MenuScene extends Phaser.Scene {
 
     gameStart() {
         const usernameInput = document.getElementById('usernameInput') as HTMLInputElement
-            const inputValue = usernameInput!.value
+        const inputValue = usernameInput!.value
 
-            if (usernameInput && !inputValue) {
-                this.setAlert('请先输入用户名')
-                return 
-            }
+        if (usernameInput && !inputValue) {
+            setAlert('请先输入用户名')
+            return 
+        }
 
-            const localUsername = localStorage.getItem('username')
-            const token = localStorage.getItem('token')
+        localStorage.setItem('username', inputValue)
+        register(inputValue).then((res) => {
+            console.log('register OK', res)
 
-            if (!!localUsername && token) {
-                this.hidInputContainer()
-                this.scene.start('game')
-            } else {
-                localStorage.setItem('username', inputValue)
-                register(inputValue).then((res) => {
-                    console.log('register OK', res)
+            const { token } = res as unknown as { token: string }
+            localStorage.setItem('token', token)
 
-                    const { token } = res as unknown as { token: string }
-                    localStorage.setItem('token', token)
-                    localStorage.setItem('timestamp', Date.now().toString())
-
-                    this.hidInputContainer()
-                    this.scene.start('game')
-                }).catch(() => {
-                    this.setAlert('该用户名已经被注册过了！')
-                })
-            }
+            this.hidInputContainer()
+            this.scene.start('game')
+        }).catch((err) => {
+            console.log(err)
+            setAlert('该用户名已经被注册过了！')
+        })
+        
     }
 
 }

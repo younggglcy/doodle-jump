@@ -1,7 +1,7 @@
 import Axios from 'axios'
 
 // export const baseURL = 'https://christmas.platelets.xyz/api'
-export const baseURL = 'https://christmas-api.itoken.team/api'
+export const baseURL = 'https://xmas.itoken.team/api'
 const generateRequest = () => {
     const request = Axios.create({
         baseURL,

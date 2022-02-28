@@ -3,19 +3,25 @@ import backgroundUrl from '../assets/bac.png'
 import cloudUrl from '../assets/cloud.png'
 import fishUrl from '../assets/fish.png'
 import feimaUrl from '../assets/fi.png'
-import doodlerUrl from '../assets/Doodler.png'
 import platformUrl from '../assets/platform.png'
 import obstacleUrl from '../assets/nanguatou.png'
 import { updateMark } from '../../api/user'
 import { PBEvent } from '../utils/observer'
 import { EventUtil } from '../utils/event'
+import { setAlert } from "../utils/helper"
+import { WIDTH, HEIGHT } from '../utils/constants'
+
+declare var DeviceOrientationEvent: {
+    prototype: DeviceOrientationEvent;
+    new(type: string, eventInitDict?: DeviceOrientationEventInit): DeviceOrientationEvent;
+    requestPermission: () => Promise<any>
+}
 
 const PLAYERBIT = 0x0001
 const PLATFORMBIT = 0X0002
 const OBSTACLEBIT = 0x0003
 
-const MAXJUMPDIS = 225
-
+let IsFrameRateSixty: any = null
 let highestPlat: Phaser.Physics.Matter.Image | null = null 
 
 // 越往上，y值越小
@@ -59,10 +65,10 @@ export default class GameScene extends Phaser.Scene {
                     if (this.plats[i].y < highestPlat.y) highestPlat = this.plats[i]
                 }
             }
-            while (this.isPlatformOverLap(highestPlat, newPlat) || highestPlat.y - newPlat.y > MAXJUMPDIS) {
+            while (this.isPlatformOverLap(highestPlat, newPlat) || highestPlat.y - newPlat.y > 200 / 750 * HEIGHT) {
                 newPlat.setPosition(
-                    Phaser.Math.Between(0, 421),
-                    Phaser.Math.Between(highestPlat.y - 15, highestPlat.y - 200)
+                    Phaser.Math.Between(0, WIDTH),
+                    Phaser.Math.Between(highestPlat.y - 180 / 750 * HEIGHT, highestPlat.y - highestPlat.height - 15)
                 )
             }
             
@@ -73,10 +79,11 @@ export default class GameScene extends Phaser.Scene {
                 // console.log(this.plats)
                 while ( this.isPlatformOverLap(this.plats[i], this.plats[i + 1]) ) {
                     // 不行，重新生成
-                    this.plats[i + 1].setX(Phaser.Math.Between(0, 421))
+                    this.plats[i + 1].setX(Phaser.Math.Between(0, WIDTH))
+                    this.plats[i + 1].setY(Phaser.Math.Between(this.plats[i].y - 180 / 750 * HEIGHT, this.plats[i].y - this.plats[i].height - 15 ))
                     continue
                 }
-                console.log('OK')
+                // console.log('OK')
                 // 跑到这里说明可以
                 i++
             }
@@ -88,7 +95,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('doodler', doodlerUrl)
         this.load.image('platform', platformUrl)
         this.load.image('obstacle', obstacleUrl)
         this.load.image('background', backgroundUrl)
@@ -123,15 +129,24 @@ export default class GameScene extends Phaser.Scene {
                 this.startGameOver()
             } else if (bodyB.label === 'platform') {
                 this.isJump = true
+                // console.log(bodyB)
             }
         })
 
         this.obstacle = null
         this.createClouds()
+        // this.plats.forEach(plat => console.log(plat.y))
     }
 
     update(time: number, delta: number) {
-        // console.log(time)
+        // console.log(delta)
+        if (IsFrameRateSixty === null) {
+            if (delta >= 30) {
+                IsFrameRateSixty = false
+            } else {
+                IsFrameRateSixty = true
+            }
+        }
         if (!this.isGameOver) {
             if (this.points) {
                 const score = this.getPointsScore()
@@ -183,13 +198,15 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createPlatforms(platformsNum: number) {
-        const platArr = ['platform1', 'platform2', 'platform3', 'platform4']
+        // 根据上一个平台的y值，生成一个平台
         const createPlat = (lasty?: number) => {
-            const randomIdx = Math.floor(Math.random() * platArr.length)
             const plat = this.matter.add.image(
-                Phaser.Math.Between(0, 421),
-                lasty !== undefined ? Phaser.Math.Between(lasty + 20, lasty + 200) : -50,
-                // platArr[randomIdx],
+                lasty !== undefined && 
+                lasty <= HEIGHT && 
+                lasty >= 400 / 750 * HEIGHT 
+                    ? WIDTH / 2 - 20
+                    : Phaser.Math.Between(0, WIDTH), // 尽量在中下方区域把平台至于肥马屁股底下
+                lasty !== undefined ? Phaser.Math.Between(lasty + 30, lasty + 180 / 750 * HEIGHT) : -50,
                 'platform',
                 undefined,
                 {
@@ -200,23 +217,6 @@ export default class GameScene extends Phaser.Scene {
                     label: 'platform'
                 }
             )
-
-            // switch (randomIdx) {
-            //     case 0:
-            //         plat.setDisplaySize(20, 70)
-            //         break
-            //     case 1:
-            //         plat.setDisplaySize(60, 40)
-            //         break
-            //     case 2:
-            //         plat.setDisplaySize(60, 40)
-            //         break
-            //     case 3:
-            //         plat.setDisplaySize(60, 40)
-            //         break
-            //     default:
-            //         break
-            // }
 
             return plat
         }
@@ -233,7 +233,7 @@ export default class GameScene extends Phaser.Scene {
 
     isPlatformOverLap = (a: Phaser.Physics.Matter.Image, b: Phaser.Physics.Matter.Image) => {
         if (
-            Math.abs(a.x - b.x) <= a.width || 
+            Math.abs(a.x - b.x) <= a.width && 
             Math.abs(a.y - b.y) <= a.height
         ) {
             return true
@@ -242,9 +242,9 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createPlayer() {
-        const player = this.matter.add.image(210, 0, 'feima', 0).setDepth(10)
-        player.setDisplaySize(56, 40)
-        player.setRectangle(56, 40, {
+        const player = this.matter.add.image(WIDTH / 2, 0, 'feima', 0).setDepth(10)
+        player.setDisplaySize(56 / 421 * WIDTH, 40 / 750 * HEIGHT)
+        player.setRectangle(56 / 421 * WIDTH, 40 / 750 * HEIGHT, {
             mass: 30,
             frictionAir: 0.01,
             collisionFilter: {
@@ -259,14 +259,47 @@ export default class GameScene extends Phaser.Scene {
         player.setFixedRotation()
 
         if (window.DeviceOrientationEvent) {
-            window.addEventListener('deviceorientation', event => {
-                if (event.gamma! < -3) {
-                    player.setVelocityX(event.gamma! * 0.4)
+            const orientationCb = (e: DeviceOrientationEvent) => {
+                if (e.gamma! < -3) {
+                    player.setVelocityX(e.gamma! * 0.3)
                 }
-                if (event.gamma! > 3) {
-                    player.setVelocityX(event.gamma! * 0.4)
+                if (e.gamma! > 3) {
+                    player.setVelocityX(e.gamma! * 0.3)
                 }
-            }, true)
+            }
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+            // console.log(navigator.userAgent)
+            // if (!!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
+            if (isIOS && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                // IOS
+                const IOSBtn = document.getElementById('ios') as HTMLButtonElement
+                // console.log('IOSBtn', IOSBtn)
+                IOSBtn.style.display = 'block'
+                this.scene.pause('game')
+                const that = this
+                IOSBtn.onclick = function() {
+                    // console.log('clicked!!')
+                    // https://www.w3.org/TR/orientation-event/#deviceorientation
+                    DeviceOrientationEvent.requestPermission()
+                    .then((permissionState: 'granted' | 'denied' | 'default') => {
+                        if (permissionState === 'granted') {
+                            window.addEventListener('deviceorientation', orientationCb, true)
+                        } else {
+                            // handle denied
+                            setAlert('denied!')
+                        }
+                    })
+                    .then(() =>{ 
+                        that.scene.start('game')
+                        IOSBtn.style.display = 'none'
+                    })
+                    .catch((err: any) => {
+                        console.log(err)
+                    })
+                }
+            } else {
+                window.addEventListener('deviceorientation', orientationCb, true)
+            }
         } else {
             const gameElement = document.getElementById('game')
             if (gameElement) {
@@ -286,8 +319,8 @@ export default class GameScene extends Phaser.Scene {
 
     createObstacles() {
         const obstacle = this.matter.add.image( 
-            Math.round(Math.random() * 300) + 50, 
-            -Math.round(Math.random() * 120) - 500 + this.cameras.main.scrollY, 
+            Math.round(Math.random() * 300 / 421 * WIDTH) + 50 / 421 * WIDTH, 
+            -Math.round(Math.random() * 120 / 750 * HEIGHT) - 500 / 750 * HEIGHT + this.cameras.main.scrollY, 
             'obstacle',
             undefined,
             {
@@ -310,17 +343,17 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createClouds() {
-        const cloud1 = this.add.image(400, 400, 'cloud1').setDisplaySize(300, 108)
-        const cloud2 = this.add.image(-15, 280, 'cloud2').setDisplaySize(300, 108)
-        const cloud3 = this.add.image(460, 95, 'cloud3').setDisplaySize(300, 108)
+        const cloud1 = this.add.image(400 / 421 * WIDTH, 400 / 750 * HEIGHT, 'cloud1').setDisplaySize(300, 108)
+        const cloud2 = this.add.image(-(15 / 421 * WIDTH), 280 / 750 * HEIGHT, 'cloud2').setDisplaySize(300, 108)
+        const cloud3 = this.add.image(460 / 421 * WIDTH, 95 / 750 * HEIGHT, 'cloud3').setDisplaySize(300, 108)
         this.clouds = [cloud1, cloud2, cloud3]
     }
 
     createFishes(nums: number) {
         const createFish = () => {
             const fish = this.add.image(
-                Phaser.Math.Between(0, 421),
-                Phaser.Math.Between(0, 750) - 500,
+                Phaser.Math.Between(0, WIDTH),
+                Phaser.Math.Between(0, HEIGHT) - 500,
                 'fish',
             )
             fish.displayWidth = 49
@@ -337,9 +370,14 @@ export default class GameScene extends Phaser.Scene {
     updateHeight() {
         const gameObjectCanvasY = this.player!.y - this.cameras.main.scrollY * this.player!.scrollFactorY
 
-        if (gameObjectCanvasY < 350) {
-            this.background!.tilePositionY += 6
-            this.scroll -= 6
+        if (gameObjectCanvasY < 350 / 750 * HEIGHT) {
+            if (!!IsFrameRateSixty) {
+                this.background!.tilePositionY += 6
+                this.scroll -= 6
+            } else {
+                this.background!.tilePositionY += 12
+                this.scroll -= 12
+            }
             this.cameras.main.setScroll(0, this.scroll)
         }
     }
@@ -347,11 +385,11 @@ export default class GameScene extends Phaser.Scene {
     setMaxSpeed() {
         const maxSpeed = 15
         if (this.player!.body.velocity.x > maxSpeed) {
-            this.player!.setVelocityX(maxSpeed);
-          }
-          if (this.player!.body.velocity.x < -maxSpeed) {
-            this.player!.setVelocityX(-maxSpeed);
-          }
+            this.player!.setVelocityX(maxSpeed)
+        }
+        if (this.player!.body.velocity.x < -maxSpeed) {
+            this.player!.setVelocityX(-maxSpeed)
+        }
     }
 
     inspectWorldview() {
@@ -363,12 +401,12 @@ export default class GameScene extends Phaser.Scene {
                     plat.setCollisionCategory(PLATFORMBIT)
                 }
 
-                if (plat.y > this.cameras.main.worldView.y + 750) {
-                    console.log('111', this.cameras.main.scrollY)
-                    console.log(plat.y)
+                if (plat.y > this.cameras.main.worldView.y + HEIGHT) {
+                    // console.log('111', this.cameras.main.scrollY)
+                    // console.log(plat.y)
                     plat.setPosition(
-                        Phaser.Math.Between(0, 421),
-                        Phaser.Math.Between(this.cameras.main.scrollY, this.cameras.main.scrollY - 250)
+                        Phaser.Math.Between(0, WIDTH),
+                        Phaser.Math.Between(this.cameras.main.scrollY - 250, this.cameras.main.scrollY)
                     )
                     // this.plats.push(this.plats.shift()!)
                     plat.setCollisionCategory(PLATFORMBIT)
@@ -380,9 +418,9 @@ export default class GameScene extends Phaser.Scene {
 
         const warpPlayer = () => {
             if (this.player!.x < 0) {
-                this.player!.x = 421
+                this.player!.x = WIDTH
             }
-            if (this.player!.x > 421) {
+            if (this.player!.x > WIDTH) {
                 this.player!.x = 0
             }
         }
@@ -398,15 +436,15 @@ export default class GameScene extends Phaser.Scene {
         const checkFish = () => {
             this.fishes.forEach(fish => {
                 if (
-                    fish.y > this.cameras.main.worldView.y + 750 ||
+                    fish.y > this.cameras.main.worldView.y + HEIGHT ||
                     (Math.abs(fish.y - this.player!.y) <= 24 &&
                     Math.abs(fish.x - this.player!.x) <= 24)
                 ) {
-                    console.log(fish.x, fish.y)
-                    console.log(this.player!.x, this.player!.y)
+                    // console.log(fish.x, fish.y)
+                    // console.log(this.player!.x, this.player!.y)
                     fish.setPosition(
-                        Phaser.Math.Between(0, 421),
-                        Phaser.Math.Between(this.cameras.main.scrollY, this.cameras.main.scrollY - 300)
+                        Phaser.Math.Between(0, WIDTH),
+                        Phaser.Math.Between(this.cameras.main.scrollY - 300, this.cameras.main.scrollY)
                     )
                     this.fishEatenNums++
                 }
@@ -428,7 +466,7 @@ export default class GameScene extends Phaser.Scene {
             checkFish()
             checkClouds()
 
-            if (this.player!.y > this.cameras.main.worldView.y + 770) {
+            if (this.player!.y > this.cameras.main.worldView.y + HEIGHT * 770 / 750) {
                 this.startGameOver()
             }
         }
