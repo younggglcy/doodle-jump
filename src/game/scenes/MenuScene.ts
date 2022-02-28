@@ -94,34 +94,35 @@ export default class MenuScene extends Phaser.Scene {
 
     gameStart() {
         const usernameInput = document.getElementById('usernameInput') as HTMLInputElement
-            const inputValue = usernameInput!.value
+        const inputValue = usernameInput!.value
 
-            if (usernameInput && !inputValue) {
-                setAlert('请先输入用户名')
-                return 
-            }
+        if (usernameInput && !inputValue) {
+            setAlert('请先输入用户名')
+            return 
+        }
 
-            const localUsername = localStorage.getItem('username')
-            const token = localStorage.getItem('token')
+        const localUsername = localStorage.getItem('username')
+        const token = localStorage.getItem('token')
 
-            if (!!localUsername && token) {
+        if (inputValue === localUsername) {
+            this.hidInputContainer()
+            this.scene.start('game')
+        } else {
+            localStorage.setItem('username', inputValue)
+            register(inputValue).then((res) => {
+                console.log('register OK', res)
+
+                const { token } = res as unknown as { token: string }
+                localStorage.setItem('token', token)
+                localStorage.setItem('timestamp', Date.now().toString())
+
                 this.hidInputContainer()
                 this.scene.start('game')
-            } else {
-                localStorage.setItem('username', inputValue)
-                register(inputValue).then((res) => {
-                    console.log('register OK', res)
-
-                    const { token } = res as unknown as { token: string }
-                    localStorage.setItem('token', token)
-                    localStorage.setItem('timestamp', Date.now().toString())
-
-                    this.hidInputContainer()
-                    this.scene.start('game')
-                }).catch(() => {
-                    setAlert('该用户名已经被注册过了！')
-                })
-            }
+            }).catch((err) => {
+                console.log(err);
+                setAlert('该用户名已经被注册过了！')
+            })
+        }
     }
 
 }
