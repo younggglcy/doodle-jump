@@ -15,7 +15,7 @@ const Gameover = () => {
     }
 
     const name = localStorage.getItem('username')
-    const score = localStorage.getItem('thisTimePoints')
+    const score = localStorage.getItem('points')
 
     const [isRankModalVisible, setIsRankModalVisible] = useState(false)
 
